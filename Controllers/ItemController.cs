@@ -17,7 +17,8 @@ namespace ShoppingWebsiteAPI.Controllers
 
         [HttpGet("all")]
         public async Task<ActionResult<List<Item>>> GetAllItems() {
-            return Ok(await _context.Items.ToListAsync());
+        {
+            return Ok(await _itemService.GetItemsAsync());
         }
 
         [HttpGet("find/{id}")]
