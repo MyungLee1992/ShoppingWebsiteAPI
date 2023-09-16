@@ -1,5 +1,7 @@
-﻿namespace ShoppingWebsiteAPI.Models {
-    public class CartItem { 
+﻿namespace ShoppingWebsiteAPI.Models
+{
+    public class CartItem
+    {
         public int Id { get; set; }
         public Cart Cart { get; set; }
         public Item Item { get; set; }

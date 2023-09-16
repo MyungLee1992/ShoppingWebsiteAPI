@@ -1,5 +1,7 @@
-﻿namespace ShoppingWebsiteAPI.Models {
-    public class CartDto {
+﻿namespace ShoppingWebsiteAPI.Models
+{
+    public class CartDto
+    {
         public int Id { get; set; }
         public UserDto User { get; set; }
     }

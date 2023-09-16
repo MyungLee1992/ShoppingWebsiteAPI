@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Mvc;
 using ShoppingWebsiteAPI.Data;
 using ShoppingWebsiteAPI.Models;
 
@@ -8,62 +6,48 @@ namespace ShoppingWebsiteAPI.Controllers
 {
     [Route("[controller]")]
     [ApiController]
-    public class ItemController : ControllerBase {
-        private readonly DataContext _context;
+    public class ItemController : ControllerBase
+    {
+        private readonly IItemService _itemService;
 
-        public ItemController(DataContext context) {
-            _context = context;
+        public ItemController(IItemService itemService)
+        {
+            _itemService = itemService;
         }
 
         [HttpGet("all")]
-        public async Task<ActionResult<List<Item>>> GetAllItems() {
+        public async Task<ActionResult<List<Item>>> GetAllItems()
         {
-            return Ok(await _itemService.GetItemsAsync());
+            var items = await _itemService.GetItemsAsync();
+            return Ok(items);
         }
 
         [HttpGet("find/{id}")]
-        public async Task<ActionResult<Item>> GetItemById(int id) {
-            var item = await _context.Items.FindAsync(id);
-            return Ok(item);
+        public async Task<ActionResult<Item>> GetItemById(Guid id)
+        {
+            var item = await _itemService.GetItemAsync(id);
+            return item == null ? NotFound() : Ok(item);
         }
 
         [HttpPost("add")]
-        public async Task<ActionResult<Item>> AddItem(Item item) {
-            _context.Items.Add(item);
-            await _context.SaveChangesAsync();
-
-            return Ok(item);
+        public async Task<ActionResult<Item>> CreateItem(ItemDto itemDto)
+        {
+            var savedItem = await _itemService.CreateItemAsync(itemDto);
+            return Ok(savedItem);
         }
 
-        [HttpPut("update")]
-        public async Task<ActionResult<Item>> UpdateItem(Item item) {
-            var existingItem = await _context.Items.FindAsync(item.Id);
-            if (existingItem == null) {
-                return BadRequest("Item not found.");
-            }
-
-            existingItem.Name = item.Name; 
-            existingItem.Description = item.Description;
-            existingItem.Type = item.Type;
-            existingItem.Price = item.Price;
-            existingItem.ImageUrl = item.ImageUrl;
-
-            _context.Items.Update(existingItem);
-            await _context.SaveChangesAsync();
-            return Ok(existingItem);    
+        [HttpPut("update/{id}")]
+        public async Task<ActionResult<Item>> UpdateItem(Guid id, ItemDto itemDto)
+        {
+            var updated = await _itemService.UpdateItemAsync(id, itemDto);
+            return updated ? Ok() : NotFound();
         }
 
         [HttpDelete("delete/{id}")]
-        public async Task<ActionResult<Item>> DeleteItem(int id) {
-            var existingItem = await _context.Items.FindAsync(id);
-            if (existingItem == null) {
-                return BadRequest("Item not found.");
-            }
-
-            _context.Items.Remove(existingItem);    
-            await _context.SaveChangesAsync();
-
-            return Ok(existingItem);
+        public async Task<ActionResult<Item>> DeleteItem(Guid id)
+        {
+            var deleted = await _itemService.DeleteItemAsync(id);
+            return deleted ? Ok() : NotFound();
         }
     }
 }

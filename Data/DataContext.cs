@@ -1,10 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore;
-using ShoppingWebsiteAPI.Models;
-using System.Reflection.Metadata;
-using System.Text;
+﻿using ShoppingWebsiteAPI.Models;
 
-namespace ShoppingWebsiteAPI.Data {
-    public class DataContext : DbContext {
+namespace ShoppingWebsiteAPI.Data
+{
+    public class DataContext : DbContext
+    {
         public DataContext(DbContextOptions<DataContext> options) : base(options) { }
 
         public DbSet<Item> Items { get; set; }
@@ -12,10 +11,11 @@ namespace ShoppingWebsiteAPI.Data {
         public DbSet<User> Users { get; set; }
 
         public DbSet<Cart> Carts { get; set; }
-        
+
         public DbSet<CartItem> CartItems { get; set; }
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder) {
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
             modelBuilder.Entity<User>()
                 .HasOne(u => u.Cart)
                 .WithOne(c => c.User)
@@ -24,7 +24,6 @@ namespace ShoppingWebsiteAPI.Data {
 
             modelBuilder.Entity<Item>().HasData(
                 new Item {
-                    Id = 1,
                     Name = "T-Shirt",
                     Description = "Men's T-Shirt",
                     Type = "Cloth",

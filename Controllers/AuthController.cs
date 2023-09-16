@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using ShoppingWebsiteAPI.Data;
@@ -9,31 +8,37 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace ShoppingWebsiteAPI.Controllers {
+namespace ShoppingWebsiteAPI.Controllers
+{
     [Route("[controller]")]
     [ApiController]
-    public class AuthController : ControllerBase {
+    public class AuthController : ControllerBase
+    {
         public static User user = new User();
         private readonly IConfiguration _configuration;
         private readonly IUserService _userService;
         private readonly DataContext _context;
 
-        public AuthController(IConfiguration configuration, IUserService userService, DataContext dataContext) {
+        public AuthController(IConfiguration configuration, IUserService userService, DataContext dataContext)
+        {
             _configuration = configuration;
             _userService = userService;
             _context = dataContext;
         }
 
         [HttpGet, Authorize]
-        public ActionResult<string> GetMe() {
+        public ActionResult<string> GetMe()
+        {
             var userName = _userService.GetMyName();
 
             return Ok(userName);
         }
 
         [HttpPost("register")]
-        public async Task<ActionResult<User>> Register(UserDto request) {
-            if (_context.Users.Any(u => u.UserName == request.UserName)) {
+        public async Task<ActionResult<User>> Register(UserDto request)
+        {
+            if (_context.Users.Any(u => u.UserName == request.UserName))
+            {
                 return BadRequest("User already exsits.");
             };
 
@@ -42,7 +47,8 @@ namespace ShoppingWebsiteAPI.Controllers {
 
 
             var cart = new Cart();
-            User user = new User {
+            User user = new User
+            {
                 UserName = request.UserName,
                 PasswordHash = passwordHash,
                 PasswordSalt = passwordSalt,
@@ -56,13 +62,16 @@ namespace ShoppingWebsiteAPI.Controllers {
         }
 
         [HttpPost("login")]
-        public async Task<ActionResult<string>> Login(UserDto request) {
+        public async Task<ActionResult<string>> Login(UserDto request)
+        {
             var user = _context.Users.Where(u => u.UserName == request.UserName).FirstOrDefault();
-            if (user == null || user.UserName != request.UserName) {
+            if (user == null || user.UserName != request.UserName)
+            {
                 return BadRequest("User not found.");
             }
 
-            if (! VerifyPasswordHash(request.Password, user.PasswordHash, user.PasswordSalt)) {
+            if (!VerifyPasswordHash(request.Password, user.PasswordHash, user.PasswordSalt))
+            {
                 return BadRequest("Wrong password.");
             }
 
@@ -75,11 +84,15 @@ namespace ShoppingWebsiteAPI.Controllers {
         }
 
         [HttpPost("refresh-token")]
-        public async Task<ActionResult<string>> RefreshToken() {
+        public async Task<ActionResult<string>> RefreshToken()
+        {
             var refreshToken = Request.Cookies["refreshToken"];
-            if (! user.RefreshToken.Equals(refreshToken)) {
+            if (!user.RefreshToken.Equals(refreshToken))
+            {
                 return Unauthorized("Invalid Refresh Token.");
-            } else if (user.TokenExpires < DateTime.Now) {
+            }
+            else if (user.TokenExpires < DateTime.Now)
+            {
                 return Unauthorized("Token expired.");
             }
 
@@ -90,8 +103,10 @@ namespace ShoppingWebsiteAPI.Controllers {
             return Ok(token);
         }
 
-        private RefreshToken GenerateRefreshToken() {
-            var refreshToken = new RefreshToken {
+        private RefreshToken GenerateRefreshToken()
+        {
+            var refreshToken = new RefreshToken
+            {
                 Token = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64)),
                 Created = DateTime.Now,
                 Expires = DateTime.Now.AddDays(7),
@@ -100,8 +115,10 @@ namespace ShoppingWebsiteAPI.Controllers {
             return refreshToken;
         }
 
-        private void SetRefreshToken(RefreshToken newRefreshToken) {
-            var cookieOptions = new CookieOptions {
+        private void SetRefreshToken(RefreshToken newRefreshToken)
+        {
+            var cookieOptions = new CookieOptions
+            {
                 HttpOnly = true,
                 Expires = newRefreshToken.Expires,
             };
@@ -112,7 +129,8 @@ namespace ShoppingWebsiteAPI.Controllers {
             user.TokenExpires = newRefreshToken.Expires;
         }
 
-        private string CreateToken(User user) {
+        private string CreateToken(User user)
+        {
             List<Claim> claims = new List<Claim>() {
                 new Claim(ClaimTypes.Name, user.UserName),
                 new Claim(ClaimTypes.Role, "User")
@@ -135,15 +153,19 @@ namespace ShoppingWebsiteAPI.Controllers {
             return jwt;
         }
 
-        private void CreatePasswordHash(string password, out byte[] passwordHash,  out byte[] passwordSalt) {
-            using (var hmac = new HMACSHA512()) {
+        private void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
+        {
+            using (var hmac = new HMACSHA512())
+            {
                 passwordSalt = hmac.Key;
                 passwordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
             }
         }
 
-        private bool VerifyPasswordHash(string password, byte[] passwordHash, byte[] passwordSalt) {
-            using (var hmac = new HMACSHA512(passwordSalt)) {
+        private bool VerifyPasswordHash(string password, byte[] passwordHash, byte[] passwordSalt)
+        {
+            using (var hmac = new HMACSHA512(passwordSalt))
+            {
                 var computeHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
                 return computeHash.SequenceEqual(passwordHash);
             }

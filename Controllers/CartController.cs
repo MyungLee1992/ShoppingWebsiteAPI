@@ -1,32 +1,33 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using ShoppingWebsiteAPI.Data;
 using ShoppingWebsiteAPI.Models;
-using ShoppingWebsiteAPI.Services;
 
 namespace ShoppingWebsiteAPI.Controllers
 {
     [Authorize]
     [Route("[controller]")]
     [ApiController]
-    public class CartController : ControllerBase {
+    public class CartController : ControllerBase
+    {
         private readonly DataContext _context;
         private readonly IUserService _userService;
 
-        public CartController(DataContext context, IUserService userService) {
+        public CartController(DataContext context, IUserService userService)
+        {
             _context = context;
             _userService = userService;
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<CartItem>>> GetCartItems() {
+        public async Task<ActionResult<List<CartItem>>> GetCartItems()
+        {
             var user = await _context.Users
                 .Where(user => user.UserName == _userService.GetMyName())
                 .FirstOrDefaultAsync();
 
-            if (user == null) {
+            if (user == null)
+            {
                 return BadRequest("Please log in to proceed.");
             }
 
@@ -36,11 +37,14 @@ namespace ShoppingWebsiteAPI.Controllers
 
             var cartItems = await _context.CartItems
                 .Where(cartItem => cartItem.Cart == cart)
-                .Select(x => new {
+                .Select(x => new
+                {
                     id = x.Id,
-                    cart = new CartDto {
+                    cart = new CartDto
+                    {
                         Id = x.Cart.Id,
-                        User = new UserDto {
+                        User = new UserDto
+                        {
                             UserName = _userService.GetMyName(),
                         }
                     },
@@ -54,7 +58,8 @@ namespace ShoppingWebsiteAPI.Controllers
         }
 
         [HttpPost("add")]
-        public async Task<ActionResult<CartItem>> AddCartItem(Item item) {
+        public async Task<ActionResult<CartItem>> AddCartItem(Item item)
+        {
             var user = await _context.Users
                 .Where(user => user.UserName == _userService.GetMyName())
                 .FirstOrDefaultAsync();
@@ -67,17 +72,21 @@ namespace ShoppingWebsiteAPI.Controllers
                 .Where(cartItem => cartItem.Cart == cart && cartItem.Item == item)
                 .FirstOrDefaultAsync();
 
-            if (cartItem == null) {
-                cartItem = new CartItem {
+            if (cartItem == null)
+            {
+                cartItem = new CartItem
+                {
                     Cart = cart,
                     Item = item,
                     Price = item.Price
                 };
-            } else {
+            }
+            else
+            {
                 cartItem.Quantity++;
                 cartItem.Price = (item.Price * cartItem.Quantity);
             }
-                
+
             _context.CartItems.Update(cartItem);
             await _context.SaveChangesAsync();
 
@@ -85,9 +94,11 @@ namespace ShoppingWebsiteAPI.Controllers
         }
 
         [HttpPut("update")]
-        public async Task<ActionResult<CartItem>> UpdateCartItem(CartItem cartItem) {
+        public async Task<ActionResult<CartItem>> UpdateCartItem(CartItem cartItem)
+        {
             var existingCartItem = await _context.CartItems.FindAsync(cartItem.Id);
-            if (existingCartItem == null) {
+            if (existingCartItem == null)
+            {
                 return BadRequest("Cart Item not found.");
             }
 
@@ -101,9 +112,11 @@ namespace ShoppingWebsiteAPI.Controllers
         }
 
         [HttpDelete("delete/{id}")]
-        public async Task<ActionResult<Cart>> DeleteCartItemByCartId(int id) {
+        public async Task<ActionResult<Cart>> DeleteCartItemByCartId(int id)
+        {
             var existingCart = await _context.Carts.FindAsync(id);
-            if (existingCart == null) {
+            if (existingCart == null)
+            {
                 return BadRequest("Cart not found.");
             }
 
@@ -114,13 +127,15 @@ namespace ShoppingWebsiteAPI.Controllers
         }
 
         [HttpDelete("delete")]
-        public async Task<ActionResult> DeleteCart() {
+        public async Task<ActionResult> DeleteCart()
+        {
             var existingCart = await _context.Carts
                 .Include(cart => cart.User)
                 .ThenInclude(user => user.UserName == _userService.GetMyName())
                 .FirstOrDefaultAsync();
 
-            if (existingCart == null) {
+            if (existingCart == null)
+            {
                 return BadRequest("Cart not found.");
             }
 
