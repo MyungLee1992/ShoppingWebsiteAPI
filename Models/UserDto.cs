@@ -1,8 +1,8 @@
 ﻿namespace ShoppingWebsiteAPI.Models
 {
-    public class UserDto
+    public record UserDto
     {
-        public string UserName { get; set; } = String.Empty;
-        public string Password { get; set; } = String.Empty;
+        public string UserName { get; init; } = String.Empty;
+        public string Password { get; init; } = String.Empty;
     }
 }

@@ -10,109 +10,46 @@ namespace ShoppingWebsiteAPI.Controllers
     [ApiController]
     public class CartController : ControllerBase
     {
+        private readonly ICartService _cartService;
         private readonly DataContext _context;
         private readonly IUserService _userService;
 
-        public CartController(DataContext context, IUserService userService)
+        public CartController(DataContext context, IUserService userService, ICartService cartService)
         {
             _context = context;
             _userService = userService;
+            _cartService = cartService;
         }
 
         [HttpGet]
         public async Task<ActionResult<List<CartItem>>> GetCartItems()
         {
-            var user = await _context.Users
-                .Where(user => user.UserName == _userService.GetMyName())
-                .FirstOrDefaultAsync();
-
-            if (user == null)
+            var cartItems = await _cartService.GetCartItemsAsync();
+            if (cartItems == null)
             {
-                return BadRequest("Please log in to proceed.");
+                BadRequest("Please log in to proceed.");
             }
-
-            var cart = await _context.Carts
-                .Where(cart => cart.User == user)
-                .FirstAsync();
-
-            var cartItems = await _context.CartItems
-                .Where(cartItem => cartItem.Cart == cart)
-                .Select(x => new
-                {
-                    id = x.Id,
-                    cart = new CartDto
-                    {
-                        Id = x.Cart.Id,
-                        User = new UserDto
-                        {
-                            UserName = _userService.GetMyName(),
-                        }
-                    },
-                    item = x.Item,
-                    quantity = x.Quantity,
-                    price = x.Price
-                })
-                .ToListAsync();
 
             return Ok(cartItems);
         }
 
-        [HttpPost("add")]
-        public async Task<ActionResult<CartItem>> AddCartItem(Item item)
+        [HttpPost("add/{itemId}")]
+        public async Task<ActionResult<CartItem>> AddCartItem(Guid itemId, ItemDto itemDto)
         {
-            var user = await _context.Users
-                .Where(user => user.UserName == _userService.GetMyName())
-                .FirstOrDefaultAsync();
-
-            var cart = await _context.Carts
-                .Where(cart => cart.User == user)
-                .FirstAsync();
-
-            var cartItem = await _context.CartItems
-                .Where(cartItem => cartItem.Cart == cart && cartItem.Item == item)
-                .FirstOrDefaultAsync();
-
-            if (cartItem == null)
-            {
-                cartItem = new CartItem
-                {
-                    Cart = cart,
-                    Item = item,
-                    Price = item.Price
-                };
-            }
-            else
-            {
-                cartItem.Quantity++;
-                cartItem.Price = (item.Price * cartItem.Quantity);
-            }
-
-            _context.CartItems.Update(cartItem);
-            await _context.SaveChangesAsync();
-
-            return Ok(cartItem);
+            await _cartService.CreateCartItemAsync(itemId, itemDto);
+            return Ok();
         }
 
-        [HttpPut("update")]
-        public async Task<ActionResult<CartItem>> UpdateCartItem(CartItem cartItem)
+        [HttpPut("update/{id}")]
+        public async Task<ActionResult<CartItem>> UpdateCartItem(Guid id, CartItemDto cartItemDto)
         {
-            var existingCartItem = await _context.CartItems.FindAsync(cartItem.Id);
-            if (existingCartItem == null)
-            {
-                return BadRequest("Cart Item not found.");
-            }
+            var updated = await _cartService.UpdateCartItemAsync(id, cartItemDto);
 
-            existingCartItem.Quantity = cartItem.Quantity;
-            existingCartItem.Price = cartItem.Price;
-
-            _context.CartItems.Update(existingCartItem);
-            await _context.SaveChangesAsync();
-
-            return Ok(existingCartItem);
+            return updated ? Ok() : NotFound();
         }
 
         [HttpDelete("delete/{id}")]
-        public async Task<ActionResult<Cart>> DeleteCartItemByCartId(int id)
+        public async Task<ActionResult<CartItem>> DeleteCartItem(Guid id)
         {
             var existingCart = await _context.Carts.FindAsync(id);
             if (existingCart == null)
@@ -129,20 +66,9 @@ namespace ShoppingWebsiteAPI.Controllers
         [HttpDelete("delete")]
         public async Task<ActionResult> DeleteCart()
         {
-            var existingCart = await _context.Carts
-                .Include(cart => cart.User)
-                .ThenInclude(user => user.UserName == _userService.GetMyName())
-                .FirstOrDefaultAsync();
+            await _cartService.DeleteCart();
 
-            if (existingCart == null)
-            {
-                return BadRequest("Cart not found.");
-            }
-
-            _context.Carts.Remove(existingCart);
-            await _context.SaveChangesAsync();
-
-            return Ok(existingCart);
+            return Ok();
         }
     }
 }

@@ -1,14 +1,14 @@
 ﻿namespace ShoppingWebsiteAPI.Models
 {
-    public class User
+    public record User
     {
-        public int Id { get; set; }
-        public string UserName { get; set; } = string.Empty;
-        public byte[] PasswordHash { get; set; } = new byte[32];
-        public byte[] PasswordSalt { get; set; } = new byte[32];
-        public string RefreshToken { get; set; } = string.Empty;
-        public DateTime TokenCreated { get; set; }
-        public DateTime TokenExpires { get; set; }
-        public Cart Cart { get; set; }
+        public int Id { get; init; }
+        public string UserName { get; init; } = string.Empty;
+        public byte[] PasswordHash { get; init; } = new byte[32];
+        public byte[] PasswordSalt { get; init; } = new byte[32];
+        public string RefreshToken { get; init; } = string.Empty;
+        public DateTime TokenCreated { get; init; }
+        public DateTime TokenExpires { get; init; }
+        public Cart Cart { get; init; } = null!;
     }
 }

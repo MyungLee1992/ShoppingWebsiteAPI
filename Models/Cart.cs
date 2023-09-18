@@ -1,9 +1,9 @@
 ﻿namespace ShoppingWebsiteAPI.Models
 {
-    public class Cart
+    public record Cart
     {
-        public int Id { get; set; }
-        public int UserId { get; set; }
-        public User User { get; set; }
+        public Guid Id { get; init; }
+        public int UserId { get; init; }
+        public User User { get; init; } = null!;
     }
 }

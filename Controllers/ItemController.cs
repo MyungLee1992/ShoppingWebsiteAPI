@@ -32,8 +32,8 @@ namespace ShoppingWebsiteAPI.Controllers
         [HttpPost("add")]
         public async Task<ActionResult<Item>> CreateItem(ItemDto itemDto)
         {
-            var savedItem = await _itemService.CreateItemAsync(itemDto);
-            return Ok(savedItem);
+            await _itemService.CreateItemAsync(itemDto);
+            return Ok();
         }
 
         [HttpPut("update/{id}")]

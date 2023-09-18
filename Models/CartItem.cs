@@ -1,11 +1,11 @@
 ﻿namespace ShoppingWebsiteAPI.Models
 {
-    public class CartItem
+    public record CartItem
     {
-        public int Id { get; set; }
-        public Cart Cart { get; set; }
-        public Item Item { get; set; }
-        public int Quantity { get; set; } = 1;
-        public double Price { get; set; }
+        public Guid Id { get; init; }
+        public Cart Cart { get; init; }
+        public Item Item { get; init; }
+        public int Quantity { get; init; } = 1;
+        public double Price { get; init; }
     }
 }

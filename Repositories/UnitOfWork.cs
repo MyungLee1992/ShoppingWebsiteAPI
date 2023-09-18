@@ -6,12 +6,25 @@ namespace ShoppingWebsiteAPI.Repositories
     {
         private bool disposed;
         private readonly DataContext _dbContext;
+        public IUserRepository Users { get; }
         public IItemRepository Items { get; }
+        public ICartRepository Carts { get; }
+        public ICartItemRepository CartItems { get; }
 
-        public UnitOfWork(DataContext dbContext, IItemRepository itemRepository)
+        public UnitOfWork
+        (
+            DataContext dbContext, 
+            IUserRepository userRepository,
+            IItemRepository itemRepository,
+            ICartRepository cartRepository,
+            ICartItemRepository cartItemRepository
+        )
         {
             _dbContext = dbContext;
+            Users = userRepository;
             Items = itemRepository;
+            Carts = cartRepository;
+            CartItems = cartItemRepository;
         }
 
         public async Task SaveAsync()

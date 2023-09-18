@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using ShoppingWebsiteAPI.Data;
 using ShoppingWebsiteAPI.Models;
+using ShoppingWebsiteAPI.Repositories;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
@@ -17,13 +18,13 @@ namespace ShoppingWebsiteAPI.Controllers
         public static User user = new User();
         private readonly IConfiguration _configuration;
         private readonly IUserService _userService;
-        private readonly DataContext _context;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public AuthController(IConfiguration configuration, IUserService userService, DataContext dataContext)
+        public AuthController(IConfiguration configuration, IUserService userService, IUnitOfWork unitOfWork)
         {
             _configuration = configuration;
             _userService = userService;
-            _context = dataContext;
+            _unitOfWork = unitOfWork;
         }
 
         [HttpGet, Authorize]
@@ -35,42 +36,48 @@ namespace ShoppingWebsiteAPI.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<ActionResult<User>> Register(UserDto request)
+        public async Task<ActionResult<User>> Register(UserDto userDto)
         {
-            if (_context.Users.Any(u => u.UserName == request.UserName))
+            var user = await _unitOfWork.Users.GetUserByUserNameAsync(userDto.UserName);
+            if (user != null)
             {
                 return BadRequest("User already exsits.");
             };
 
-            CreatePasswordHash(request.Password, out byte[] passwordHash, out byte[] passwordSalt);
+            CreatePasswordHash(userDto.Password, out byte[] passwordHash, out byte[] passwordSalt);
 
-
-
-            var cart = new Cart();
-            User user = new User
+            user = new User
             {
-                UserName = request.UserName,
+                UserName = userDto.UserName,
                 PasswordHash = passwordHash,
-                PasswordSalt = passwordSalt,
-                Cart = cart,
+                PasswordSalt = passwordSalt
             };
 
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync();
+            _unitOfWork.Users.Add(user);
+            await _unitOfWork.SaveAsync();
+
+            var cart = new Cart
+            {
+                UserId = user.Id,
+                User = user
+            };
+
+            _unitOfWork.Carts.Add(cart);
+            await _unitOfWork.SaveAsync();
 
             return Ok(user);
         }
 
         [HttpPost("login")]
-        public async Task<ActionResult<string>> Login(UserDto request)
+        public async Task<ActionResult<string>> Login(UserDto userDto)
         {
-            var user = _context.Users.Where(u => u.UserName == request.UserName).FirstOrDefault();
-            if (user == null || user.UserName != request.UserName)
+            var user = await _unitOfWork.Users.GetUserByUserNameAsync(userDto.UserName);
+            if (user == null || user.UserName != userDto.UserName)
             {
                 return BadRequest("User not found.");
             }
 
-            if (!VerifyPasswordHash(request.Password, user.PasswordHash, user.PasswordSalt))
+            if (!VerifyPasswordHash(userDto.Password, user.PasswordHash, user.PasswordSalt))
             {
                 return BadRequest("Wrong password.");
             }
@@ -124,9 +131,12 @@ namespace ShoppingWebsiteAPI.Controllers
             };
             Response.Cookies.Append("refreshToken", newRefreshToken.Token, cookieOptions);
 
-            user.RefreshToken = newRefreshToken.Token;
-            user.TokenCreated = newRefreshToken.Created;
-            user.TokenExpires = newRefreshToken.Expires;
+            user = user with
+            {
+                RefreshToken = newRefreshToken.Token,
+                TokenCreated = newRefreshToken.Created,
+                TokenExpires = newRefreshToken.Expires,
+            };
         }
 
         private string CreateToken(User user)

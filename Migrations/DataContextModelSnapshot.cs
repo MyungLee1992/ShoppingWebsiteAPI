@@ -24,11 +24,9 @@ namespace ShoppingWebsiteAPI.Migrations
 
             modelBuilder.Entity("ShoppingWebsiteAPI.Models.Cart", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("UserId")
                         .HasColumnType("int");
@@ -43,14 +41,12 @@ namespace ShoppingWebsiteAPI.Migrations
 
             modelBuilder.Entity("ShoppingWebsiteAPI.Models.CartItem", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("uniqueidentifier");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("CartId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("CartId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("ItemId")
                         .HasColumnType("uniqueidentifier");
@@ -102,7 +98,7 @@ namespace ShoppingWebsiteAPI.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("0716c8e2-4bed-48e9-b457-00f4e4b4d7b9"),
+                            Id = new Guid("7eb6ac68-8e28-4c57-be4b-f71e6dda8a52"),
                             Description = "Men's T-Shirt",
                             ImageUrl = "https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=387&q=80",
                             Name = "T-Shirt",

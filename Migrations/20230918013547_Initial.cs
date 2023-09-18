@@ -49,8 +49,7 @@ namespace ShoppingWebsiteAPI.Migrations
                 name: "Carts",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     UserId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -68,9 +67,8 @@ namespace ShoppingWebsiteAPI.Migrations
                 name: "CartItems",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    CartId = table.Column<int>(type: "int", nullable: false),
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CartId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     ItemId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Quantity = table.Column<int>(type: "int", nullable: false),
                     Price = table.Column<double>(type: "float", nullable: false)
@@ -95,7 +93,7 @@ namespace ShoppingWebsiteAPI.Migrations
             migrationBuilder.InsertData(
                 table: "Items",
                 columns: new[] { "Id", "Description", "ImageUrl", "Name", "Price", "Type" },
-                values: new object[] { new Guid("0716c8e2-4bed-48e9-b457-00f4e4b4d7b9"), "Men's T-Shirt", "https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=387&q=80", "T-Shirt", 32.450000000000003, "Cloth" });
+                values: new object[] { new Guid("7eb6ac68-8e28-4c57-be4b-f71e6dda8a52"), "Men's T-Shirt", "https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=387&q=80", "T-Shirt", 32.450000000000003, "Cloth" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_CartItems_CartId",
