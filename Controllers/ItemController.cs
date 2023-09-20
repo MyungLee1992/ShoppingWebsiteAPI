@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using ShoppingWebsiteAPI.Data;
 using ShoppingWebsiteAPI.Models;
 
 namespace ShoppingWebsiteAPI.Controllers
@@ -30,21 +29,21 @@ namespace ShoppingWebsiteAPI.Controllers
         }
 
         [HttpPost("add")]
-        public async Task<ActionResult<Item>> CreateItem(ItemDto itemDto)
+        public async Task<ActionResult> CreateItem(ItemDto itemDto)
         {
             await _itemService.CreateItemAsync(itemDto);
             return Ok();
         }
 
         [HttpPut("update/{id}")]
-        public async Task<ActionResult<Item>> UpdateItem(Guid id, ItemDto itemDto)
+        public async Task<ActionResult> UpdateItem(Guid id, ItemDto itemDto)
         {
             var updated = await _itemService.UpdateItemAsync(id, itemDto);
             return updated ? Ok() : NotFound();
         }
 
         [HttpDelete("delete/{id}")]
-        public async Task<ActionResult<Item>> DeleteItem(Guid id)
+        public async Task<ActionResult> DeleteItem(Guid id)
         {
             var deleted = await _itemService.DeleteItemAsync(id);
             return deleted ? Ok() : NotFound();

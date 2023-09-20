@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using ShoppingWebsiteAPI.Data;
 using ShoppingWebsiteAPI.Models;
 
 namespace ShoppingWebsiteAPI.Controllers
@@ -11,13 +10,9 @@ namespace ShoppingWebsiteAPI.Controllers
     public class CartController : ControllerBase
     {
         private readonly ICartService _cartService;
-        private readonly DataContext _context;
-        private readonly IUserService _userService;
 
-        public CartController(DataContext context, IUserService userService, ICartService cartService)
+        public CartController(ICartService cartService)
         {
-            _context = context;
-            _userService = userService;
             _cartService = cartService;
         }
 
@@ -34,14 +29,14 @@ namespace ShoppingWebsiteAPI.Controllers
         }
 
         [HttpPost("add/{itemId}")]
-        public async Task<ActionResult<CartItem>> AddCartItem(Guid itemId, ItemDto itemDto)
+        public async Task<ActionResult> AddCartItem(Guid itemId, ItemDto itemDto)
         {
             await _cartService.CreateCartItemAsync(itemId, itemDto);
             return Ok();
         }
 
         [HttpPut("update/{id}")]
-        public async Task<ActionResult<CartItem>> UpdateCartItem(Guid id, CartItemDto cartItemDto)
+        public async Task<ActionResult> UpdateCartItem(Guid id, CartItemDto cartItemDto)
         {
             var updated = await _cartService.UpdateCartItemAsync(id, cartItemDto);
 
@@ -49,18 +44,11 @@ namespace ShoppingWebsiteAPI.Controllers
         }
 
         [HttpDelete("delete/{id}")]
-        public async Task<ActionResult<CartItem>> DeleteCartItem(Guid id)
+        public async Task<ActionResult> DeleteCartItem(Guid id)
         {
-            var existingCart = await _context.Carts.FindAsync(id);
-            if (existingCart == null)
-            {
-                return BadRequest("Cart not found.");
-            }
+            var deleted = await _cartService.DeleteCartItemAsync(id);
 
-            _context.Carts.Remove(existingCart);
-            await _context.SaveChangesAsync();
-
-            return Ok(existingCart);
+            return deleted ? Ok() : NotFound();
         }
 
         [HttpDelete("delete")]

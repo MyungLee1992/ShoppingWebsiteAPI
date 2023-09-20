@@ -85,6 +85,7 @@ namespace ShoppingWebsiteAPI.Services
             
             _unitOfWork.CartItems.Update(cartItem);
 
+            await _unitOfWork.SaveAsync();
             return true;
         }
 
@@ -108,13 +109,16 @@ namespace ShoppingWebsiteAPI.Services
                 .FindByCondition(cart => cart.User.UserName == _userService.GetMyName())
                 .FirstOrDefaultAsync();
 
-            if (cart == null)
+            if (cart != null)
             {
-                return false;
-            }
+                var cartItems = await _unitOfWork.CartItems.GetAllCartItemsByCartAsync(cart.Id);
+                foreach (var cartItem in cartItems)
+                {
+                    _unitOfWork.CartItems.Remove(cartItem);
+                }
 
-            _unitOfWork.Carts.Remove(cart);
-            await _unitOfWork.SaveAsync();
+                await _unitOfWork.SaveAsync();
+            }
 
             return true;
         }
