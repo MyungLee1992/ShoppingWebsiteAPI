@@ -46,7 +46,7 @@ namespace ShoppingWebsiteAPI.Services
         public async Task<bool> UpdateItemAsync(Guid id, ItemDto itemDto)
         {
             var item = await _unitOfWork.Items.GetItemByIdAsync(id);
-            if (item == null)
+            if (item == null || itemDto == null)
             {
                 return false;
             }

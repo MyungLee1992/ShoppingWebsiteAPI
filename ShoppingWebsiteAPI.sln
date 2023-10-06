@@ -5,6 +5,10 @@ VisualStudioVersion = 17.6.33829.357
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShoppingWebsiteAPI", "ShoppingWebsiteAPI.csproj", "{CCC3B20C-6F8F-49E9-98DE-A4381AA39F58}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{BFC74A9A-2FD8-4C28-BABB-03B0EAE8DD44}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServiceLayer.Tests.NUnit", "Tests\ServiceLayer.Tests.NUnit\ServiceLayer.Tests.NUnit.csproj", "{C6A75714-4F07-4882-A4EB-19CAC64635F5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,9 +19,16 @@ Global
 		{CCC3B20C-6F8F-49E9-98DE-A4381AA39F58}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CCC3B20C-6F8F-49E9-98DE-A4381AA39F58}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CCC3B20C-6F8F-49E9-98DE-A4381AA39F58}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C6A75714-4F07-4882-A4EB-19CAC64635F5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C6A75714-4F07-4882-A4EB-19CAC64635F5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C6A75714-4F07-4882-A4EB-19CAC64635F5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C6A75714-4F07-4882-A4EB-19CAC64635F5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{C6A75714-4F07-4882-A4EB-19CAC64635F5} = {BFC74A9A-2FD8-4C28-BABB-03B0EAE8DD44}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {DB435CDE-EB6B-4FC8-A3FE-AC90C45D9613}
