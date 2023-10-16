@@ -1,0 +1,27 @@
+version: '3.4'
+
+services:
+  backend:
+    image: ${DOCKER_REGISTRY-}shopping-website-server
+    container_name: shopping-website-server
+    build:
+      context: .
+      dockerfile: ShoppingWebsite.API/Dockerfile
+    ports:
+      - "5000:80"
+      - "44388:443"
+    networks:
+      - shopping-website-api
+  frontend:
+    image: seanlee1/shopping-website-client
+    container_name: shopping-website-client
+    restart: on-failure
+    ports:
+      - "4200:80"
+    networks:
+      - shopping-website-api
+volumes:
+  db-data:
+networks:
+  shopping-website-api:
+    driver: bridge  
