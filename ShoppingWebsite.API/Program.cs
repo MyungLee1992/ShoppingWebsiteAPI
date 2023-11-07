@@ -72,7 +72,7 @@ builder.Services.AddDbContext<DataContext>(options =>
 builder.Services.AddCors(options => options.AddPolicy(name: "ShoppingWebsiteOrigins",
     policy =>
     {
-        policy.WithOrigins("http://localhost:4200").AllowAnyMethod().AllowAnyHeader();
+        policy.WithOrigins("https://localhost:4200").AllowAnyMethod().AllowAnyHeader();
     }));
 
 // Ignore cycle reference
@@ -80,6 +80,9 @@ builder.Services.AddControllers().AddJsonOptions(x =>
                 x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
 
 var app = builder.Build();
+
+// Initialize Database
+DatabaseManagementService.MigrationInitialisation(app);
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

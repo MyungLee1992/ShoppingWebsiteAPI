@@ -1,27 +1,33 @@
 version: '3.4'
 
 services:
+  db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: sql-server
+    ports:
+      - "1433:1433"
+    environment:
+      SA_PASSWORD: "Pass@word123"
+      ACCEPT_EULA: "Y"
+    networks:
+      - shopping-website-api
+
   backend:
     image: ${DOCKER_REGISTRY-}shopping-website-server
     container_name: shopping-website-server
     build:
-      context: .
-      dockerfile: ShoppingWebsite.API/Dockerfile
+      context: ./ShoppingWebsite.API
+      dockerfile: Dockerfile
     ports:
-      - "5000:80"
-      - "44388:443"
+      - "8080:80"
+      - "7259:443"
+    depends_on:
+      - db
     networks:
       - shopping-website-api
-  frontend:
-    image: seanlee1/shopping-website-client
-    container_name: shopping-website-client
-    restart: on-failure
-    ports:
-      - "4200:80"
-    networks:
-      - shopping-website-api
+
 volumes:
   db-data:
 networks:
   shopping-website-api:
-    driver: bridge  
+    driver: bridge   

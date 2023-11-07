@@ -30,7 +30,7 @@ namespace ShoppingWebsiteAPI.Services
             return cartItems.Select(cartItem => _mapper.Map<CartItemDto>(cartItem));
         }
 
-        public async Task<bool> CreateCartItemAsync(Guid itemId, ItemDto itemDto) 
+        public async Task<bool> CreateCartItemAsync(ItemDto itemDto) 
         {
             var user = await _unitOfWork.Users.GetUserByUserNameAsync(_userService.GetMyName()).ConfigureAwait(false);
             if (user == null)
@@ -38,13 +38,13 @@ namespace ShoppingWebsiteAPI.Services
                 return false;
             }
 
-            var item = await _unitOfWork.Items.GetItemByIdAsync(itemId);
+            var item = await _unitOfWork.Items.GetItemByIdAsync(itemDto.Id);
             if (item == null)
             {
                 return false;
             }
 
-            var cartItem = await _unitOfWork.CartItems.GetCartItemByCartAndItemAsync(user.Cart.Id, itemId);
+            var cartItem = await _unitOfWork.CartItems.GetCartItemByCartAndItemAsync(user.Cart.Id, item.Id);
             if (cartItem == null)
             {
                 cartItem = new CartItem
@@ -69,9 +69,9 @@ namespace ShoppingWebsiteAPI.Services
             return true;
         }
 
-        public async Task<bool> UpdateCartItemAsync(Guid id, CartItemDto cartItemDto) 
+        public async Task<bool> UpdateCartItemAsync(CartItemDto cartItemDto) 
         {
-            var cartItem = await _unitOfWork.CartItems.GetCartItemByIdAsync(id);
+            var cartItem = await _unitOfWork.CartItems.GetCartItemByIdAsync(cartItemDto.Id);
             if (cartItem == null)
             {
                 return false;

@@ -3,7 +3,7 @@ using ShoppingWebsiteAPI.Models;
 
 namespace ShoppingWebsiteAPI.Controllers
 {
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     [ApiController]
     public class ItemController : ControllerBase
     {
@@ -35,10 +35,10 @@ namespace ShoppingWebsiteAPI.Controllers
             return Ok();
         }
 
-        [HttpPut("update/{id}")]
-        public async Task<ActionResult> UpdateItem(Guid id, ItemDto itemDto)
+        [HttpPut("update")]
+        public async Task<ActionResult> UpdateItem(ItemDto itemDto)
         {
-            var updated = await _itemService.UpdateItemAsync(id, itemDto);
+            var updated = await _itemService.UpdateItemAsync(itemDto);
             return updated ? Ok() : NotFound();
         }
 

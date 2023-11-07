@@ -22,9 +22,11 @@ namespace ServiceLayer.Tests.NUnit
             _mapper = new Mock<IMapper>();
             _itemService = new ItemService(_unitOfWork.Object, _mapper.Object);
 
+            Guid id = Guid.NewGuid();
+
             item = new Item
             {
-                Id = Guid.NewGuid(),
+                Id = id,
                 Name = "Jacket",
                 Description = "Men's Jacket",
                 Type = "Cloth",
@@ -34,6 +36,7 @@ namespace ServiceLayer.Tests.NUnit
 
             itemDto = new ItemDto
             {
+                Id = id,
                 Name = "Jacket",
                 Description = "Men's Jacket",
                 Type = "Cloth",
@@ -46,11 +49,14 @@ namespace ServiceLayer.Tests.NUnit
         public async Task GetItems_WithSampleItems_ReturnsAllItems()
         {
             // Arrange
+            var id1 = Guid.NewGuid();
+            var id2 = Guid.NewGuid();
+            var id3 = Guid.NewGuid();
             var items = new List<Item>
             {
                 new Item 
                 { 
-                    Id = Guid.NewGuid(), 
+                    Id = id1, 
                     Name = "Jacket", 
                     Description = "Men's Jacket", 
                     Type = "Cloth", 
@@ -59,7 +65,7 @@ namespace ServiceLayer.Tests.NUnit
                 },
                 new Item
                 {
-                    Id = Guid.NewGuid(),
+                    Id = id2,
                     Name = "Pants",
                     Description = "Men's Pants",
                     Type = "Cloth",
@@ -68,7 +74,7 @@ namespace ServiceLayer.Tests.NUnit
                 },
                 new Item
                 {
-                    Id = Guid.NewGuid(),
+                    Id = id3,
                     Name = "Shirts",
                     Description = "Men's Shirts",
                     Type = "Cloth",
@@ -81,6 +87,7 @@ namespace ServiceLayer.Tests.NUnit
             {
                 new ItemDto
                 {
+                    Id = id1,
                     Name = "Jacket",
                     Description = "Men's Jacket",
                     Type = "Cloth",
@@ -89,6 +96,7 @@ namespace ServiceLayer.Tests.NUnit
                 },
                 new ItemDto
                 {
+                    Id = id2,
                     Name = "Pants",
                     Description = "Men's Pants",
                     Type = "Cloth",
@@ -97,6 +105,7 @@ namespace ServiceLayer.Tests.NUnit
                 },
                 new ItemDto
                 {
+                    Id = id3,
                     Name = "Shirts",
                     Description = "Men's Shirts",
                     Type = "Cloth",
@@ -163,7 +172,7 @@ namespace ServiceLayer.Tests.NUnit
             _unitOfWork.Setup(repo => repo.Items.GetItemByIdAsync(id)).ReturnsAsync(() => null);
 
             // Act
-            var result = await _itemService.UpdateItemAsync(id, itemDto);
+            var result = await _itemService.UpdateItemAsync(itemDto);
 
             // Assert
             Assert.That(result, Is.False);
@@ -173,10 +182,10 @@ namespace ServiceLayer.Tests.NUnit
         public async Task UpdateItem_WithoutItemDto_ReturnFalse()
         {
             // Arrange
-            _unitOfWork.Setup(repo => repo.Items.GetItemByIdAsync(item.Id)).ReturnsAsync(item);
+            _unitOfWork.Setup(repo => repo.Items.GetItemByIdAsync(itemDto.Id)).ReturnsAsync(() => null);
 
             // Act
-            var result = await _itemService.UpdateItemAsync(item.Id, null!);
+            var result = await _itemService.UpdateItemAsync(null!);
 
             // Assert
             Assert.That(result, Is.False);

@@ -8,13 +8,7 @@ namespace ShoppingWebsiteAPI.DependencyInjections
         public AutoMapperProfile()
         {
             CreateMap<UserDto, User>().ReverseMap();
-            CreateMap<ItemDto, Item>()
-                .ForMember(
-                    dest => dest.Id,
-                    opt => opt.MapFrom(src => Guid.NewGuid())
-                )
-                .ReverseMap(); 
-
+            CreateMap<ItemDto, Item>().ReverseMap(); 
             CreateMap<CartDto, Cart>().ReverseMap();
             CreateMap<CartItemDto, CartItem>().ReverseMap();
         }

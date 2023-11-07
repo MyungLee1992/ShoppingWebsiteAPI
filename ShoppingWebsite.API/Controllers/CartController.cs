@@ -5,7 +5,7 @@ using ShoppingWebsiteAPI.Models;
 namespace ShoppingWebsiteAPI.Controllers
 {
     [Authorize]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     [ApiController]
     public class CartController : ControllerBase
     {
@@ -28,17 +28,17 @@ namespace ShoppingWebsiteAPI.Controllers
             return Ok(cartItems);
         }
 
-        [HttpPost("add/{itemId}")]
-        public async Task<ActionResult> AddCartItem(Guid itemId, ItemDto itemDto)
+        [HttpPost("add")]
+        public async Task<ActionResult> AddCartItem(ItemDto itemDto)
         {
-            await _cartService.CreateCartItemAsync(itemId, itemDto);
+            await _cartService.CreateCartItemAsync(itemDto);
             return Ok();
         }
 
-        [HttpPut("update/{id}")]
-        public async Task<ActionResult> UpdateCartItem(Guid id, CartItemDto cartItemDto)
+        [HttpPut("update")]
+        public async Task<ActionResult> UpdateCartItem(CartItemDto cartItemDto)
         {
-            var updated = await _cartService.UpdateCartItemAsync(id, cartItemDto);
+            var updated = await _cartService.UpdateCartItemAsync(cartItemDto);
 
             return updated ? Ok() : NotFound();
         }

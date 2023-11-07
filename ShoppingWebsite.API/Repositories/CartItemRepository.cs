@@ -14,17 +14,29 @@ namespace ShoppingWebsiteAPI.Repositories
 
         public async Task<IEnumerable<CartItem>> GetAllCartItemsByCartAsync(Guid cartId) 
         {
-            return await FindByCondition(cartItem => cartItem.Cart.Id == cartId).ToListAsync();
+            return await FindByCondition(cartItem => cartItem.Cart.Id == cartId)
+                .Include(cartItem => cartItem.Cart)
+                .ThenInclude(cart => cart.User)
+                .Include(cartItem => cartItem.Item)
+                .ToListAsync();
         }
 
         public async Task<CartItem?> GetCartItemByIdAsync(Guid id)
         {
-            return await FindByCondition(cartItem => cartItem.Id == id).FirstOrDefaultAsync();
+            return await FindByCondition(cartItem => cartItem.Id == id)
+                .Include(cartItem => cartItem.Cart)
+                .ThenInclude(cart => cart.User)
+                .Include(cartItem => cartItem.Item)
+                .FirstOrDefaultAsync();
         }
 
         public async Task<CartItem?> GetCartItemByCartAndItemAsync(Guid cartId, Guid itemId)
         {
-            return await FindByCondition(cartItem => cartItem.Cart.Id == cartId && cartItem.Item.Id == itemId).FirstOrDefaultAsync();
+            return await FindByCondition(cartItem => cartItem.Cart.Id == cartId && cartItem.Item.Id == itemId)
+                .Include(cartItem => cartItem.Cart)
+                .ThenInclude(cart => cart.User)
+                .Include(cartItem => cartItem.Item)
+                .FirstOrDefaultAsync();
         }
 
         public void AddCartItem(CartItem cartItem)

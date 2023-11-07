@@ -11,7 +11,7 @@ using System.Text;
 
 namespace ShoppingWebsiteAPI.Controllers
 {
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     [ApiController]
     public class AuthController : ControllerBase
     {

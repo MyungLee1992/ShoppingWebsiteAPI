@@ -43,16 +43,22 @@ namespace ShoppingWebsiteAPI.Services
             return true;
         }
 
-        public async Task<bool> UpdateItemAsync(Guid id, ItemDto itemDto)
+        public async Task<bool> UpdateItemAsync(ItemDto itemDto)
         {
-            var item = await _unitOfWork.Items.GetItemByIdAsync(id);
-            if (item == null || itemDto == null)
+            if (itemDto == null)
+            {
+                return false;
+            }
+
+            var item = await _unitOfWork.Items.GetItemByIdAsync(itemDto.Id);
+            if (item == null)
             {
                 return false;
             }
 
             item = item with
             {
+                Id = itemDto.Id,
                 Name = itemDto.Name,
                 Description = itemDto.Description,
                 Type = itemDto.Type,
@@ -61,7 +67,6 @@ namespace ShoppingWebsiteAPI.Services
             };
 
             _unitOfWork.Items.UpdateItem(item);
-
             await _unitOfWork.SaveAsync();
             return true;
         }
