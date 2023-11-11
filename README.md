@@ -29,6 +29,8 @@
 ## Development setup
 * Download project
 ```sh
+mkdir shoppingwebsite
+cd shoppingwebsite
 git clone https://github.com/MyungLee1992/ShoppingWebsiteClient-Angular.git
 git clone https://github.com/MyungLee1992/ShoppingWebsiteAPI-.NET.git
 ```
@@ -36,11 +38,13 @@ git clone https://github.com/MyungLee1992/ShoppingWebsiteAPI-.NET.git
 * Back-End Project
 ```
 open ShoppingWebsiteAPI-.NET in Visual Studio
-run the application
+Solution Explorer -> right click docker-compose -> Set as Startup Project
+run docker-compose
 ```
 
 * Front-End Project
 ```sh
 cd ShoppingWebsiteClient-Angular
-ng serve
+npm start
 ```
+To visit frontend website, click https://localhost:4200
