@@ -1,4 +1,5 @@
 ﻿using ShoppingWebsiteAPI.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace ShoppingWebsiteAPI.Data
 {
@@ -33,5 +34,7 @@ namespace ShoppingWebsiteAPI.Data
             );
 
         }
+
+        public DbSet<ShoppingWebsiteAPI.Models.Order>? Order { get; set; }
     }
 }
